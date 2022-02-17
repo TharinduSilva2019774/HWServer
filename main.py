@@ -6,23 +6,65 @@ import seaborn
 app = Flask('app')
 
 
+
+
 @app.route('/getbmi', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
-def test():
+def getbmi():
     file = request.files['image']
     file.save("NotCropedPhoto/temp.jpg")
     ml_model.crop_save_image()
+    arr = ml_model.img2arr('./CropedPhotoTemp/croped.jpg', 1)
 
-    predictions = ml_model.make_predictions()
+    predictions = ml_model.make_BMI_predictions(arr)
+
     result = {
         'PIC_prediction': list(predictions)
     }
     return jsonify(result)
 
 
+@app.route('/getagegender', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+def getagegender():
+    file = request.files['image']
+    file.save("NotCropedPhoto/temp.jpg")
+    ml_model.crop_save_image()
+    arr = ml_model.img2arr('./CropedPhotoTemp/croped.jpg', 1)
 
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0', port=9696)
+    predictions = ml_model.make_AgeGender_predictions(arr)
 
+    result = {
+        'PIC_prediction': list(predictions)
+    }
+    return jsonify(result)
+
+@app.route('/getheightweight', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+def getheightweight():
+    file = request.files['image']
+    file.save("NotCropedPhoto/temp.jpg")
+    ml_model.crop_save_image()
+    arr = ml_model.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+
+    predictions = ml_model.make_HeightWeight_predictions(arr)
+
+    result = {
+        'PIC_prediction': list(predictions)
+    }
+    return jsonify(result)
+
+@app.route('/getheightweightagegender', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+def getheightweightagegender():
+    file = request.files['image']
+    file.save("NotCropedPhoto/temp.jpg")
+    ml_model.crop_save_image()
+    arr = ml_model.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+
+    predictionsAG = ml_model.make_AgeGender_predictions(arr)
+    predictionsHW = ml_model.make_HeightWeight_predictions(arr)
+
+    result = {
+        'PIC_prediction': list(predictionsAG+predictionsHW)
+    }
+    return jsonify(result)
 
 @app.route('/ping', methods=['GET'])
 def ping():

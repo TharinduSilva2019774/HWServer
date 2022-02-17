@@ -20,15 +20,12 @@ import os
 from keras import backend as K
 
 test_dir = './NotCropedPhoto/temp.jpg'
-# # train_dir = './data/face/'
 test_processed_dir = './CropedPhotoTemp/'
-# # train_processed_dir = './data/face_aligned/'
 BMI_model_name="./models/BMI_f16.tflite"
-# BMI_model_name = "./models/BMI_12m.tflite"
 
-# # AgeGender_model_name="./models/AgeGender_fp16.tflite"
-AgeGender_model_name = "./models/AgeGender_20m.tflite"
-# # logging.info('list images in test_dir[{}]'.format(test_dir))
+AgeGender_model_name="./models/AgeGender_fp16.tflite"
+
+HeightWeight_model_name="./models/height_weight_models.tflite"
 
 detector = MTCNN()
 
@@ -133,14 +130,20 @@ def load_model_BMI():
     print("BMI loaded")
     return BMI_interpreter_fp16
 
+def load_model_AgeGender():
+    AgeGender_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=AgeGender_model_name)
+    AgeGender_interpreter_fp16.allocate_tensors()
+    print("age gender loaded")
+    return AgeGender_interpreter_fp16
 
-# def load_model_AgeGender():
-#     AgeGender_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=AgeGender_model_name)
-#     AgeGender_interpreter_fp16.allocate_tensors()
-#     print("age gender loaded")
-#     return AgeGender_interpreter_fp16
+def load_model_HeightWeight():
+    HeightWeight_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=HeightWeight_model_name)
+    HeightWeight_interpreter_fp16.allocate_tensors()
+    print("height weight loaded")
+    return HeightWeight_interpreter_fp16
 
-def make_predictions():
+
+def make_BMI_predictions(arr):
     BMI_interpreter_fp16 = load_model_BMI()
     # AgeGender_interpreter_fp16=load_model_AgeGender()
     print("-3")
@@ -148,7 +151,6 @@ def make_predictions():
     print("-2")
     output_index = BMI_interpreter_fp16.get_output_details()[0]["index"]
     print("-1")
-    arr = img2arr('./CropedPhotoTemp/croped.jpg', 1)
     BMI_interpreter_fp16.set_tensor(input_index, arr)
     print("0")
     BMI_interpreter_fp16.invoke()
@@ -156,26 +158,69 @@ def make_predictions():
     BMI_predictions = BMI_interpreter_fp16.get_tensor(output_index)
     print("2")
 
-    # input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
-    # output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
-    # output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
-    #
-    # AgeGender_interpreter_fp16.set_tensor(input_index, arr)
-    # AgeGender_interpreter_fp16.invoke()
-    print("3")
-    # gender=AgeGender_interpreter_fp16.get_tensor(output_index1)
-    # age=AgeGender_interpreter_fp16.get_tensor(output_index2)
-    print("4")
-    # print(int(gender[0][0]))
-    # print(int(age[0][0]))
+
     print(int(BMI_predictions[0][0]))
 
-    # retults = [int(BMI_predictions[0][0]), int(age[0][0]),int(gender[0][0])]
     retults = [int(BMI_predictions[0][0])]
     print(type(retults))
     print("5")
     return retults
 
 
+def make_AgeGender_predictions(arr):
+    AgeGender_interpreter_fp16=load_model_AgeGender()
+
+    input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
+    output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
+    output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
+
+    AgeGender_interpreter_fp16.set_tensor(input_index, arr)
+    AgeGender_interpreter_fp16.invoke()
+    gender=AgeGender_interpreter_fp16.get_tensor(output_index1)
+    age=AgeGender_interpreter_fp16.get_tensor(output_index2)
+    print(int(gender[0][0]))
+    print(int(age[0][0]))
+
+    retults = [int(age[0][0]), int(gender[0][0])]
+    print(type(retults))
+    return retults
+
+
+def make_AgeGender_predictions(arr):
+    AgeGender_interpreter_fp16=load_model_AgeGender()
+
+    input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
+    output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
+    output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
+
+    AgeGender_interpreter_fp16.set_tensor(input_index, arr)
+    AgeGender_interpreter_fp16.invoke()
+    gender=AgeGender_interpreter_fp16.get_tensor(output_index1)
+    age=AgeGender_interpreter_fp16.get_tensor(output_index2)
+    print(int(gender[0][0]))
+    print(int(age[0][0]))
+
+    retults = [int(age[0][0]), int(gender[0][0])]
+    print(type(retults))
+    return retults
+
+
+def make_HeightWeight_predictions(arr):
+    HeightWeight_interpreter_fp16=load_model_HeightWeight()
+
+    input_index = HeightWeight_interpreter_fp16.get_input_details()[0]["index"]
+    output_index1 = HeightWeight_interpreter_fp16.get_output_details()[0]["index"]
+    output_index2 = HeightWeight_interpreter_fp16.get_output_details()[1]["index"]
+
+    HeightWeight_interpreter_fp16.set_tensor(input_index, arr)
+    HeightWeight_interpreter_fp16.invoke()
+    height=HeightWeight_interpreter_fp16.get_tensor(output_index1)
+    weight=HeightWeight_interpreter_fp16.get_tensor(output_index2)
+    print(int(height[0][0]))
+    print(int(weight[0][0]))
+
+    retults = [int(height[0][0]), int(weight[0][0])]
+    print(type(retults))
+    return retults
 def t():
     return "hello"
