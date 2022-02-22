@@ -68,7 +68,7 @@ def getheightweightagegender():
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    return "Pinging Model is really use full!"
+    return "Pinging Model is really use full! Yay!!!!!!!!!"
 
 
 if __name__ == '__main__':
