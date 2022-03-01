@@ -1,31 +1,18 @@
-# # import logging
-# # logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-
-
-# from keras.preprocessing import image #-------solved i think
-
-
-# # gives error
-# from keras_vggface import utils
 import cv2
 
-from mtcnn.mtcnn import MTCNN  # reqire openCV
+from mtcnn.mtcnn import MTCNN
 
 from tensorflow.keras.preprocessing import image
 import numpy as np
-import shutil
 from matplotlib import pyplot as plt
 import tensorflow
-import os
 from keras import backend as K
 
 test_dir = './NotCropedPhoto/temp.jpg'
 test_processed_dir = './CropedPhotoTemp/'
-BMI_model_name="./models/BMI_f16.tflite"
-
-AgeGender_model_name="./models/AgeGender_fp16.tflite"
-
-HeightWeight_model_name="./models/height_weight_models.tflite"
+BMI_model_name = "./models/BMI_f16.tflite"
+AgeGender_model_name = "./models/AgeGender_fp16.tflite"
+HeightWeight_model_name = "./models/height_weight_models.tflite"
 
 detector = MTCNN()
 
@@ -75,27 +62,15 @@ def detect_face(face_path):
     return box
 
 
-# ## Process Cropping For All test Faces
-# logging.info('Processing test_dir[{}]'.format(test_dir))
-
-# if os.path.exists(test_processed_dir):
-#     shutil.rmtree(test_processed_dir)
-# os.mkdir(test_processed_dir)
-
-# for img in tqdm(os.listdir(test_dir)):
-#     box = detect_face(test_dir+img)
-#     im = plt.imread(test_dir+img)
-#     cropped = crop_img(im, *box['box'])
-#     plt.imsave(test_processed_dir+img, crop_img(im, *box['box']))
-
 def save_image(imgData):
     print(imgData)
+
 
 def crop_save_image():
     box = detect_face(test_dir)
     im = plt.imread(test_dir)
     cropped = crop_img(im, *box['box'])
-    plt.imsave(test_processed_dir+"croped.jpg", crop_img(im, *box['box']))
+    plt.imsave(test_processed_dir + "croped.jpg", crop_img(im, *box['box']))
     return "cropped"
 
 
@@ -111,6 +86,7 @@ def img2arr(img_path, version=1):
     img = process_arr(img, version)
     return img
 
+
 def process_arr(arr, version):
     """process array (resize, mean-substract)
     Args:
@@ -120,7 +96,7 @@ def process_arr(arr, version):
     """
     img = cv2.resize(arr, (224, 224))
     img = np.expand_dims(img, 0)
-    img = preprocess_input(img, version = version)
+    img = preprocess_input(img, version=version)
     return img
 
 
@@ -130,11 +106,13 @@ def load_model_BMI():
     print("BMI loaded")
     return BMI_interpreter_fp16
 
+
 def load_model_AgeGender():
     AgeGender_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=AgeGender_model_name)
     AgeGender_interpreter_fp16.allocate_tensors()
     print("age gender loaded")
     return AgeGender_interpreter_fp16
+
 
 def load_model_HeightWeight():
     HeightWeight_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=HeightWeight_model_name)
@@ -145,30 +123,23 @@ def load_model_HeightWeight():
 
 def make_BMI_predictions(arr):
     BMI_interpreter_fp16 = load_model_BMI()
-    # AgeGender_interpreter_fp16=load_model_AgeGender()
-    print("-3")
+
     input_index = BMI_interpreter_fp16.get_input_details()[0]["index"]
-    print("-2")
     output_index = BMI_interpreter_fp16.get_output_details()[0]["index"]
-    print("-1")
+
     BMI_interpreter_fp16.set_tensor(input_index, arr)
-    print("0")
     BMI_interpreter_fp16.invoke()
-    print("1")
     BMI_predictions = BMI_interpreter_fp16.get_tensor(output_index)
-    print("2")
 
+    print(float(BMI_predictions[0][0]))
 
-    print(int(BMI_predictions[0][0]))
-
-    retults = [int(BMI_predictions[0][0])]
+    retults = [float(BMI_predictions[0][0])]
     print(type(retults))
-    print("5")
     return retults
 
 
 def make_AgeGender_predictions(arr):
-    AgeGender_interpreter_fp16=load_model_AgeGender()
+    AgeGender_interpreter_fp16 = load_model_AgeGender()
 
     input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
     output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
@@ -176,18 +147,18 @@ def make_AgeGender_predictions(arr):
 
     AgeGender_interpreter_fp16.set_tensor(input_index, arr)
     AgeGender_interpreter_fp16.invoke()
-    gender=AgeGender_interpreter_fp16.get_tensor(output_index1)
-    age=AgeGender_interpreter_fp16.get_tensor(output_index2)
-    print(int(gender[0][0]))
-    print(int(age[0][0]))
+    gender = AgeGender_interpreter_fp16.get_tensor(output_index1)
+    age = AgeGender_interpreter_fp16.get_tensor(output_index2)
+    print(float(gender[0][0]))
+    print(float(age[0][0]))
 
-    retults = [int(age[0][0]), int(gender[0][0])]
+    retults = [float(age[0][0]), float(gender[0][0])]
     print(type(retults))
     return retults
 
 
 def make_AgeGender_predictions(arr):
-    AgeGender_interpreter_fp16=load_model_AgeGender()
+    AgeGender_interpreter_fp16 = load_model_AgeGender()
 
     input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
     output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
@@ -195,18 +166,18 @@ def make_AgeGender_predictions(arr):
 
     AgeGender_interpreter_fp16.set_tensor(input_index, arr)
     AgeGender_interpreter_fp16.invoke()
-    gender=AgeGender_interpreter_fp16.get_tensor(output_index1)
-    age=AgeGender_interpreter_fp16.get_tensor(output_index2)
-    print(int(gender[0][0]))
-    print(int(age[0][0]))
+    gender = AgeGender_interpreter_fp16.get_tensor(output_index1)
+    age = AgeGender_interpreter_fp16.get_tensor(output_index2)
+    print(float(gender[0][0]))
+    print(float(age[0][0]))
 
-    retults = [int(age[0][0]), int(gender[0][0])]
+    retults = [float(age[0][0]), float(gender[0][0])]
     print(type(retults))
     return retults
 
 
 def make_HeightWeight_predictions(arr):
-    HeightWeight_interpreter_fp16=load_model_HeightWeight()
+    HeightWeight_interpreter_fp16 = load_model_HeightWeight()
 
     input_index = HeightWeight_interpreter_fp16.get_input_details()[0]["index"]
     output_index1 = HeightWeight_interpreter_fp16.get_output_details()[0]["index"]
@@ -214,13 +185,30 @@ def make_HeightWeight_predictions(arr):
 
     HeightWeight_interpreter_fp16.set_tensor(input_index, arr)
     HeightWeight_interpreter_fp16.invoke()
-    height=HeightWeight_interpreter_fp16.get_tensor(output_index1)
-    weight=HeightWeight_interpreter_fp16.get_tensor(output_index2)
-    print(int(height[0][0]))
-    print(int(weight[0][0]))
+    height = HeightWeight_interpreter_fp16.get_tensor(output_index1)
+    weight = HeightWeight_interpreter_fp16.get_tensor(output_index2)
+    print(float(height[0][0]))
+    print(float(weight[0][0]))
 
-    retults = [int(height[0][0]), int(weight[0][0])]
+    retults = [float(height[0][0]), float(weight[0][0])]
     print(type(retults))
     return retults
-def t():
-    return "hello"
+
+
+def poundsToKG(pounds):
+    return pounds * 0.45359237
+
+
+def inchesToCm(inches):
+    return inches * 2.54
+
+
+def AGHWToBMR(age, gender, height, weight):
+    height = inchesToCm(height)
+    weight = poundsToKG(weight)
+    if gender > 0.6:
+        BMR = (10 * weight) + (6.25 * height) - (5 * int(age)) + 5
+    else:
+        BMR = (10 * weight) + (6.25 * height) - (5 * int(age)) - 161
+
+    return BMR
