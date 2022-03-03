@@ -55,17 +55,17 @@ def process_arr(arr, version):
 
 class Asset:
     test_dir = './NotCropedPhoto/temp.jpg'
-    test_processed_dir = './CropedPhotoTemp/'
+    test_processed_dir = './CropedPhotoTemp/croped.jpg'
     BMI_model_name = "./models/BMI_f16.tflite"
     AgeGender_model_name = "./models/AgeGender_fp16.tflite"
     HeightWeight_model_name = "./models/height_weight_models.tflite"
 
-    def __init__(self):
-        test_dir = './NotCropedPhoto/temp.jpg'
-        test_processed_dir = './CropedPhotoTemp/'
-        BMI_model_name = "./models/BMI_f16.tflite"
-        AgeGender_model_name = "./models/AgeGender_fp16.tflite"
-        HeightWeight_model_name = "./models/height_weight_models.tflite"
+    def __init__(self,test_dir,test_processed_dir,BMI_model_name,AgeGender_model_name,HeightWeight_model_name):
+        self.test_dir = test_dir
+        self.test_processed_dir = test_processed_dir
+        self.BMI_model_name = BMI_model_name
+        self.AgeGender_model_name = AgeGender_model_name
+        self.HeightWeight_model_name = HeightWeight_model_name
 
     detector = MTCNN()
 
@@ -81,7 +81,7 @@ class Asset:
         box = self.detect_face()
         im = plt.imread(self.test_dir)
         cropped = crop_img(im, *box['box'])
-        plt.imsave(self.test_processed_dir + "croped.jpg", crop_img(im, *box['box']))
+        plt.imsave(self.test_processed_dir, crop_img(im, *box['box']))
 
 
     def img2arr(self, img_path, version=1):

@@ -1,19 +1,31 @@
 from unittest import TestCase
 from ml_model import Asset
-
-Assets = Asset()
+import os
+Assets = Asset('./NotCropedPhoto/temp.jpg', './CropedPhotoTemp/cropedForTest.jpg', "./models/BMI_f16.tflite",
+               "./models/AgeGender_fp16.tflite", "./models/height_weight_models.tflite")
 
 
 class TestAsset(TestCase):
-    # def test_detect_face(self):
-    #     self.fail()
-    #
-    # def test_save_image(self):
-    #     self.fail()
-    #
-    # def test_crop_save_image(self):
-    #     self.fail()
-    #
+    def test_detect_face(self):
+        try:
+            Assets.detect_face()
+            self.assertTrue(True)
+        except:
+            self.fail()
+
+
+    def test_crop_save_image(self):
+        if os.path.exists(Assets.test_processed_dir):
+            os.remove(Assets.test_processed_dir)
+
+        Assets.crop_save_image()
+
+        if os.path.exists(Assets.test_processed_dir):
+            self.assertTrue(True)
+        else:
+            self.fail()
+
+
     # def test_img2arr(self):
     #     self.fail()
     #
@@ -43,10 +55,12 @@ class TestAsset(TestCase):
         actual = float("{0:.5f}".format(Assets.poundsToKG(10)))
         expected = 4.53592
         self.assertEqual(expected, actual)
+
     #
-    # def test_inches_to_cm(self):
-    #     self.fail()
+    def test_inches_to_cm(self):
+        actual = float("{0:.1f}".format(Assets.inchesToCm(10)))
+        expected = 25.4
+        self.assertEqual(expected, actual)
 
     # def test_aghwto_bmr(self):
     #     self.fail()
-

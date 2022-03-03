@@ -4,10 +4,16 @@ import gunicorn
 import seaborn
 
 app = Flask('app')
-Assets = Asset()
+Assets = Asset('./NotCropedPhoto/temp.jpg', './CropedPhotoTemp/croped.jpg', "./models/BMI_f16.tflite",
+               "./models/AgeGender_fp16.tflite", "./models/height_weight_models.tflite")
 
 
-@app.route('/faceDetect', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+@app.route('/', methods=['GET'])
+def homePage():
+    return "This is home page"
+
+
+@app.route('/faceDetect', methods=['POST'])
 def faceDetect():
     file = request.files['image']
     file.save("NotCropedPhoto/temp.jpg")
