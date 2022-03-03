@@ -7,6 +7,22 @@ app = Flask('app')
 Assets = Asset()
 
 
+@app.route('/faceDetect', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+def faceDetect():
+    file = request.files['image']
+    file.save("NotCropedPhoto/temp.jpg")
+    faceDetectAble = True
+    try:
+        Assets.crop_save_image()
+    except:
+        faceDetectAble = False
+
+    result = {
+        'PIC_prediction': str(faceDetectAble)
+    }
+    return jsonify(result)
+
+
 @app.route('/getbmi', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
 def getbmi():
     file = request.files['image']

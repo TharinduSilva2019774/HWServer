@@ -84,7 +84,7 @@ class Asset:
         im = plt.imread(self.test_dir)
         cropped = crop_img(im, *box['box'])
         plt.imsave(self.test_processed_dir + "croped.jpg", crop_img(im, *box['box']))
-        return "cropped"
+
 
     def img2arr(self, img_path, version=1):
         """convert single image to array
