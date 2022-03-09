@@ -4,7 +4,7 @@ from ml_model import process_arr
 import os
 from tensorflow.keras.preprocessing import image
 
-Assets = Asset('./NotCropedPhoto/temp.jpg', './CropedPhotoTemp/cropedForTest.jpg', "./models/BMI_f16.tflite",
+Assets = Asset('./NotCropedPhoto/tempForTest.jpg', './CropedPhotoTemp/cropedForTest.jpg', "./models/BMI_f16.tflite",
                "./models/AgeGender_fp16.tflite", "./models/height_weight_models.tflite")
 
 
@@ -34,56 +34,51 @@ class TestAsset(TestCase):
         self.assertEqual(img.all(),Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg',1).all())
 
     def test_load_model_bmi(self):
-        try:
-            BMI_interpreter_fp16 = Assets.load_model_BMI()
-            arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
-            input_index = BMI_interpreter_fp16.get_input_details()[0]["index"]
-            output_index = BMI_interpreter_fp16.get_output_details()[0]["index"]
+        BMI_interpreter_fp16 = Assets.load_model_BMI()
+        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        input_index = BMI_interpreter_fp16.get_input_details()[0]["index"]
+        output_index = BMI_interpreter_fp16.get_output_details()[0]["index"]
 
-            BMI_interpreter_fp16.set_tensor(input_index, arr)
-            BMI_interpreter_fp16.invoke()
-            BMI_predictions = BMI_interpreter_fp16.get_tensor(output_index)
-            self.assertEqual(int(BMI_predictions), 24)
-        except:
-            self.fail()
+        BMI_interpreter_fp16.set_tensor(input_index, arr)
+        BMI_interpreter_fp16.invoke()
+        BMI_predictions = BMI_interpreter_fp16.get_tensor(output_index)
+        self.assertEqual(int(BMI_predictions), 24)
+
 
     def test_load_model_age_gender(self):
-        try:
-            AgeGender_interpreter_fp16 = Assets.load_model_AgeGender()
-            arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
-            input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
-            output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
-            output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
+        AgeGender_interpreter_fp16 = Assets.load_model_AgeGender()
+        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
+        output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
+        output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
 
-            AgeGender_interpreter_fp16.set_tensor(input_index, arr)
-            AgeGender_interpreter_fp16.invoke()
-            gender = AgeGender_interpreter_fp16.get_tensor(output_index1)
-            age = AgeGender_interpreter_fp16.get_tensor(output_index2)
-            if int(gender) == 0 and int(age) == 13:
-                self.assertTrue(True)
-            else:
-                self.fail()
-        except:
-            self.fail()
+        AgeGender_interpreter_fp16.set_tensor(input_index, arr)
+        AgeGender_interpreter_fp16.invoke()
+        gender = AgeGender_interpreter_fp16.get_tensor(output_index1)
+        age = AgeGender_interpreter_fp16.get_tensor(output_index2)
+        if int(gender) == 0 and int(age) == 13:
+            self.assertTrue(True)
+        else:
+            self.fail("gender or age !=")
+
 
     def test_load_model_height_weight(self):
-        try:
-            HeightWeight_interpreter_fp16 = Assets.load_model_HeightWeight()
-            arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
-            input_index = HeightWeight_interpreter_fp16.get_input_details()[0]["index"]
-            output_index1 = HeightWeight_interpreter_fp16.get_output_details()[0]["index"]
-            output_index2 = HeightWeight_interpreter_fp16.get_output_details()[1]["index"]
 
-            HeightWeight_interpreter_fp16.set_tensor(input_index, arr)
-            HeightWeight_interpreter_fp16.invoke()
-            height = HeightWeight_interpreter_fp16.get_tensor(output_index1)
-            weight = HeightWeight_interpreter_fp16.get_tensor(output_index2)
-            if int(height) == 69 and int(weight) == 167:
-                self.assertTrue(True)
-            else:
-                self.fail()
-        except:
-            self.fail()
+        HeightWeight_interpreter_fp16 = Assets.load_model_HeightWeight()
+        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        input_index = HeightWeight_interpreter_fp16.get_input_details()[0]["index"]
+        output_index1 = HeightWeight_interpreter_fp16.get_output_details()[0]["index"]
+        output_index2 = HeightWeight_interpreter_fp16.get_output_details()[1]["index"]
+
+        HeightWeight_interpreter_fp16.set_tensor(input_index, arr)
+        HeightWeight_interpreter_fp16.invoke()
+        height = HeightWeight_interpreter_fp16.get_tensor(output_index1)
+        weight = HeightWeight_interpreter_fp16.get_tensor(output_index2)
+        if int(height) == 69 and int(weight) == 167:
+            self.assertTrue(True)
+        else:
+            self.fail("height or weight !=")
+
 
     def test_make_bmi_predictions(self):
         arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)

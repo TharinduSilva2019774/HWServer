@@ -15,14 +15,17 @@ def homePage():
 
 @app.route('/faceDetect', methods=['POST'])
 def faceDetect():
+    # getting image data from post request
     file = request.files['image']
+    # saving image
     file.save("NotCropedPhoto/temp.jpg")
+    # ckeck if face detectable
     faceDetectAble = True
     try:
         Assets.crop_save_image()
     except:
         faceDetectAble = False
-
+    # create result
     result = {
         'PIC_prediction': str(faceDetectAble)
     }

@@ -8,9 +8,11 @@ from keras import backend as K
 
 
 def crop_img(im, x, y, w, h):
+    # croping face from image using face detect data
     return im[y:(y + h), x:(x + w), :]
 
 
+# normalizing the image data
 def preprocess_input(x, data_format=None, version=1):
     x_temp = np.copy(x)
     if data_format is None:
@@ -54,13 +56,15 @@ def process_arr(arr, version):
 
 
 class Asset:
+    # assigning assets locations
     test_dir = './NotCropedPhoto/temp.jpg'
     test_processed_dir = './CropedPhotoTemp/croped.jpg'
     BMI_model_name = "./models/BMI_f16.tflite"
     AgeGender_model_name = "./models/AgeGender_fp16.tflite"
     HeightWeight_model_name = "./models/height_weight_models.tflite"
 
-    def __init__(self,test_dir,test_processed_dir,BMI_model_name,AgeGender_model_name,HeightWeight_model_name):
+    # constructor
+    def __init__(self, test_dir, test_processed_dir, BMI_model_name, AgeGender_model_name, HeightWeight_model_name):
         self.test_dir = test_dir
         self.test_processed_dir = test_processed_dir
         self.BMI_model_name = BMI_model_name
@@ -74,49 +78,47 @@ class Asset:
         box = self.detector.detect_faces(img)[0]
         return box
 
-    def save_image(self, imgData):
-        print(imgData)
-
     def crop_save_image(self):
         box = self.detect_face()
+        # load image
         im = plt.imread(self.test_dir)
-        cropped = crop_img(im, *box['box'])
+        # detect ,crop ,save image
         plt.imsave(self.test_processed_dir, crop_img(im, *box['box']))
 
-
+    # convert single image to array
     def img2arr(self, img_path, version=1):
-        """convert single image to array
-        Args:
-            @img_path: full path of the image (e.g. ./tmp/pic001.png)
-        Return:
-            np.array
-        """
         img = image.load_img(img_path)
         img = image.img_to_array(img)
+        # normalizing image to be entered to the custom VGG16 model
         img = process_arr(img, version)
         return img
 
+    # load and return BMI tensorflow elite model
     def load_model_BMI(self):
         BMI_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=self.BMI_model_name)
         BMI_interpreter_fp16.allocate_tensors()
         print("BMI loaded")
         return BMI_interpreter_fp16
 
+    # load and return Age and Gender tensorflow elite model
     def load_model_AgeGender(self):
         AgeGender_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=self.AgeGender_model_name)
         AgeGender_interpreter_fp16.allocate_tensors()
         print("age gender loaded")
         return AgeGender_interpreter_fp16
 
+    # load and return Height and Weight tensorflow elite model
     def load_model_HeightWeight(self):
         HeightWeight_interpreter_fp16 = tensorflow.lite.Interpreter(model_path=self.HeightWeight_model_name)
         HeightWeight_interpreter_fp16.allocate_tensors()
         print("height weight loaded")
         return HeightWeight_interpreter_fp16
 
+    # make predictions from the loaded tensorflow elite model
     def make_BMI_predictions(self, arr):
         BMI_interpreter_fp16 = self.load_model_BMI()
 
+        # get model input and output indexes
         input_index = BMI_interpreter_fp16.get_input_details()[0]["index"]
         output_index = BMI_interpreter_fp16.get_output_details()[0]["index"]
 
@@ -130,6 +132,7 @@ class Asset:
         print(type(retults))
         return retults
 
+    # make predictions from the loaded tensorflow elite model
     def make_AgeGender_predictions(self, arr):
         AgeGender_interpreter_fp16 = self.load_model_AgeGender()
 
@@ -148,24 +151,7 @@ class Asset:
         print(type(retults))
         return retults
 
-    def make_AgeGender_predictions(self, arr):
-        AgeGender_interpreter_fp16 = self.load_model_AgeGender()
-
-        input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
-        output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
-        output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
-
-        AgeGender_interpreter_fp16.set_tensor(input_index, arr)
-        AgeGender_interpreter_fp16.invoke()
-        gender = AgeGender_interpreter_fp16.get_tensor(output_index1)
-        age = AgeGender_interpreter_fp16.get_tensor(output_index2)
-        print(float(gender[0][0]))
-        print(float(age[0][0]))
-
-        retults = [float(age[0][0]), float(gender[0][0])]
-        print(type(retults))
-        return retults
-
+    # make predictions from the loaded tensorflow elite model
     def make_HeightWeight_predictions(self, arr):
         HeightWeight_interpreter_fp16 = self.load_model_HeightWeight()
 
@@ -184,12 +170,15 @@ class Asset:
         print(type(retults))
         return retults
 
+    # convert pounds to KG
     def poundsToKG(self, pounds):
         return pounds * 0.45359237
 
+    # convert inches to CM
     def inchesToCm(self, inches):
         return inches * 2.54
 
+    # calculate BMI
     def AGHWToBMR(self, age, gender, height, weight):
         height = self.inchesToCm(height)
         weight = self.poundsToKG(weight)
