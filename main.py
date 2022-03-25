@@ -134,15 +134,37 @@ def post_users():
 
     sql = f"INSERT INTO userdata (username, BMI, BMR) VALUES ('{_username}', '{_BMI}','{_BMR}');"
 
-    Assets.execute(sql)
+    Assets.execute(sql, True)
     return "I hope it worked"
+
+
+@app.route('/getData', methods=['POST'])
+def getData():
+    data = request.data.decode('utf-8')
+    jsondata = json.loads(data)
+
+    _username = jsondata['username']
+    # sql = f"SELECT BMI, BMR FROM userdata WHERE username='{_username}';"
+    sql = f"SELECT BMI,BMR FROM userdata where username='{_username}';"
+    IHopeItWorked = Assets.execute(sql, False)
+    print(IHopeItWorked)
+    BMI = []
+    BMR = []
+    for i in IHopeItWorked:
+        BMI.append(i[0])
+        BMR.append(i[1])
+
+    result = {
+        'BMI_data': BMI, 'BMR_data': BMR
+    }
+    return result
 
 
 @app.route('/PostTest', methods=['POST'])
 def PostTest():
     data = request.data.decode('utf-8')
     print(type(data))
-    jsondata=json.loads(data)
+    jsondata = json.loads(data)
     print(jsondata['username'])
     print(jsondata['BMI'])
     print(jsondata['BMR'])

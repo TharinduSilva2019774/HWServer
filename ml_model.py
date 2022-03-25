@@ -190,7 +190,7 @@ class Asset:
 
         return BMR
 
-    def execute(self,sql):
+    def execute(self,sql,ifInsert):
         # REMOTE DATABASE
         conn = pymysql.connect(host='database-1.cksrynn1pjqu.us-east-1.rds.amazonaws.com',
                                port=3306,
@@ -198,11 +198,21 @@ class Asset:
                                password='bmhealthdatabase',
                                db='TeamFuego',
                                )
-        result = None
+        result = ()
         try:
-            with conn.cursor() as cursor:
-                cursor.execute(sql)
-            conn.commit()
+            if ifInsert:
+                print("wrong place")
+                with conn.cursor() as cursor:
+                    cursor.execute(sql)
+                conn.commit()
+            else:
+                print("correct place")
+                with conn.cursor() as cursor:
+                    cursor.execute(sql)
+                    result = cursor.fetchmany(size=50)
+                    l = [list(x) for x in result]
+                    print(l)
+                    return l
         finally:
             conn.close()
         return result
