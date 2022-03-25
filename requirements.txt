@@ -8,3 +8,4 @@ Flask==2.0.2
 gunicorn==20.1.0
 seaborn==0.11.2
 keras==2.7.0
+PyMySQL==1.0.2

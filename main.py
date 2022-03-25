@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, jsonify
 from ml_model import Asset
 import gunicorn
@@ -32,7 +34,7 @@ def faceDetect():
     return jsonify(result)
 
 
-@app.route('/getbmi', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+@app.route('/getbmi', methods=['POST'])  # get BMI from image
 def getbmi():
     file = request.files['image']
     file.save("NotCropedPhoto/temp.jpg")
@@ -48,7 +50,7 @@ def getbmi():
 
 
 @app.route('/getagegender',
-           methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+           methods=['POST'])
 def getagegender():
     file = request.files['image']
     file.save("NotCropedPhoto/temp.jpg")
@@ -64,7 +66,7 @@ def getagegender():
 
 
 @app.route('/getheightweight',
-           methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+           methods=['POST'])
 def getheightweight():
     file = request.files['image']
     file.save("NotCropedPhoto/temp.jpg")
@@ -116,6 +118,35 @@ def getBMR():
 @app.route('/ping', methods=['GET'])
 def ping():
     return "Pinging Model is really use full! Yay!!!!!!!!!"
+
+
+@app.route('/addData', methods=['POST'])
+def post_users():
+    data = request.data.decode('utf-8')
+    jsondata = json.loads(data)
+    # file = request.file['username']
+    # _username = 'TharinduSilva'
+    # _BMI = 24.1
+    # _BMR = 1775
+    _username = jsondata['username']
+    _BMI = float(jsondata['BMI'])
+    _BMR = int(jsondata['BMR'])
+
+    sql = f"INSERT INTO userdata (username, BMI, BMR) VALUES ('{_username}', '{_BMI}','{_BMR}');"
+
+    Assets.execute(sql)
+    return "I hope it worked"
+
+
+@app.route('/PostTest', methods=['POST'])
+def PostTest():
+    data = request.data.decode('utf-8')
+    print(type(data))
+    jsondata=json.loads(data)
+    print(jsondata['username'])
+    print(jsondata['BMI'])
+    print(jsondata['BMR'])
+    return data
 
 
 if __name__ == '__main__':

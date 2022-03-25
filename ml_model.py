@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import tensorflow
 from keras import backend as K
+import pymysql
 
 
 def crop_img(im, x, y, w, h):
@@ -188,3 +189,20 @@ class Asset:
             BMR = (10 * weight) + (6.25 * height) - (5 * int(age)) - 161
 
         return BMR
+
+    def execute(self,sql):
+        # REMOTE DATABASE
+        conn = pymysql.connect(host='database-1.cksrynn1pjqu.us-east-1.rds.amazonaws.com',
+                               port=3306,
+                               user='admin',
+                               password='bmhealthdatabase',
+                               db='TeamFuego',
+                               )
+        result = None
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(sql)
+            conn.commit()
+        finally:
+            conn.close()
+        return result
