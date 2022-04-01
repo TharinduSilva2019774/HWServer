@@ -10,6 +10,7 @@ import pymysql
 
 
 
+
 def crop_img(im, x, y, w, h):
     # croping face from image using face detect data
     return im[y:(y + h), x:(x + w), :]
