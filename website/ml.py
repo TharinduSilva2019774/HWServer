@@ -6,8 +6,8 @@ import seaborn
 from werkzeug.utils import secure_filename
 
 ml=Blueprint('ml', __name__)
-Assets = Asset('webapp/website/NotCropedPhoto/temp.jpg', 'webapp/website/CropedPhotoTemp/croped.jpg', "webapp/website/models/BMI_f16.tflite",
-               "webapp/website/models/AgeGender_fp16.tflite", "webapp/website/models/height_weight_models.tflite")
+Assets = Asset('./website/NotCropedPhoto/temp.jpg', './website/CropedPhotoTemp/croped.jpg', "./website/models/BMI_f16.tflite",
+               "./website/models/AgeGender_fp16.tflite", "./website/models/height_weight_models.tflite")
 
 
 @ml.route('/', methods=['GET'])
@@ -20,7 +20,7 @@ def faceDetect():
     # getting image data from post request
     file = request.files['image']
     # saving image
-    file.save("NotCropedPhoto/temp.jpg")
+    file.save("./website/NotCropedPhoto/temp.jpg")
     # ckeck if face detectable
     faceDetectAble = True
     try:
@@ -37,9 +37,9 @@ def faceDetect():
 @ml.route('/getbmi', methods=['POST'])  # get BMI from image
 def getbmi():
     file = request.files['image']
-    file.save("NotCropedPhoto/temp.jpg")
+    file.save("./website/NotCropedPhoto/temp.jpg")
     Assets.crop_save_image()
-    arr = Assets.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+    arr = Assets.img2arr('./website/CropedPhotoTemp/croped.jpg', 1)
 
     predictions = Assets.make_BMI_predictions(arr)
 
@@ -53,9 +53,9 @@ def getbmi():
            methods=['POST'])
 def getagegender():
     file = request.files['image']
-    file.save("NotCropedPhoto/temp.jpg")
+    file.save("./website/NotCropedPhoto/temp.jpg")
     Assets.crop_save_image()
-    arr = Assets.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+    arr = Assets.img2arr('./website/CropedPhotoTemp/croped.jpg', 1)
 
     predictions = Assets.make_AgeGender_predictions(arr)
 
@@ -69,9 +69,9 @@ def getagegender():
            methods=['POST'])
 def getheightweight():
     file = request.files['image']
-    file.save("NotCropedPhoto/temp.jpg")
+    file.save("./website/NotCropedPhoto/temp.jpg")
     Assets.crop_save_image()
-    arr = Assets.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+    arr = Assets.img2arr('./website/CropedPhotoTemp/croped.jpg', 1)
 
     predictions = Assets.make_HeightWeight_predictions(arr)
 
@@ -85,9 +85,9 @@ def getheightweight():
            methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
 def getheightweightagegender():
     file = request.files['image']
-    file.save("NotCropedPhoto/temp.jpg")
+    file.save("./website/NotCropedPhoto/temp.jpg")
     Assets.crop_save_image()
-    arr = Assets.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+    arr = Assets.img2arr('./website/CropedPhotoTemp/croped.jpg', 1)
 
     predictionsAG = Assets.make_AgeGender_predictions(arr)
     predictionsHW = Assets.make_HeightWeight_predictions(arr)
@@ -101,9 +101,9 @@ def getheightweightagegender():
 @ml.route('/getbmr', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
 def getBMR():
     file = request.files['image']
-    file.save("NotCropedPhoto/temp.jpg")
+    file.save("./website/NotCropedPhoto/temp.jpg")
     Assets.crop_save_image()
-    arr = Assets.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+    arr = Assets.img2arr('./website/CropedPhotoTemp/croped.jpg', 1)
 
     predictionsAG = Assets.make_AgeGender_predictions(arr)
     predictionsHW = Assets.make_HeightWeight_predictions(arr)
@@ -175,9 +175,9 @@ def PostTest():
 def result():
     if request.method == 'POST':
       f = request.files['file']
-      f.save('webapp/website/NotCropedPhoto/temp.jpg')
+      f.save('./website/NotCropedPhoto/temp.jpg')
       Assets.crop_save_image()
-      arr = Assets.img2arr('webapp/website/CropedPhotoTemp/croped.jpg', 1)
+      arr = Assets.img2arr('./website/CropedPhotoTemp/croped.jpg', 1)
 
       BMI = Assets.make_BMI_predictions(arr)
       predictionsAG = Assets.make_AgeGender_predictions(arr)
