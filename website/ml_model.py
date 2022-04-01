@@ -61,11 +61,11 @@ def process_arr(arr, version):
 
 class Asset:
     # assigning assets locations
-    test_dir = './NotCropedPhoto/temp.jpg'
-    test_processed_dir = './CropedPhotoTemp/croped.jpg'
-    BMI_model_name = "./models/BMI_f16.tflite"
-    AgeGender_model_name = "./models/AgeGender_fp16.tflite"
-    HeightWeight_model_name = "./models/height_weight_models.tflite"
+    test_dir = './website/NotCropedPhoto/temp.jpg'
+    test_processed_dir = './website/CropedPhotoTemp/croped.jpg'
+    BMI_model_name = "./website/models/BMI_f16.tflite"
+    AgeGender_model_name = "./website/models/AgeGender_fp16.tflite"
+    HeightWeight_model_name = "./website/models/height_weight_models.tflite"
 
     # constructor
     def __init__(self, test_dir, test_processed_dir, BMI_model_name, AgeGender_model_name, HeightWeight_model_name):

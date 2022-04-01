@@ -4,11 +4,11 @@ from website.ml_model import process_arr
 import os
 from tensorflow.keras.preprocessing import image
 
-Assets = Asset('./NotCropedPhoto/tempForTest.jpg',
-               './CropedPhotoTemp/cropedForTest.jpg',
-               "./models/BMI_f16.tflite",
-               "./models/AgeGender_fp16.tflite",
-               "./models/height_weight_models.tflite")
+Assets = Asset('./website/NotCropedPhoto/tempForTest.jpg',
+               './website/CropedPhotoTemp/cropedForTest.jpg',
+               "./website/models/BMI_f16.tflite",
+               "./website/models/AgeGender_fp16.tflite",
+               "./website/models/height_weight_models.tflite")
 
 class TestAsset(TestCase):
     # Test if face detect function work
@@ -33,15 +33,15 @@ class TestAsset(TestCase):
 
     # Test if Image to array converter works
     def test_img2arr(self):
-        img = image.load_img('./CropedPhotoTemp/cropedForTest.jpg')
+        img = image.load_img('./website/CropedPhotoTemp/cropedForTest.jpg')
         img = image.img_to_array(img)
         img = process_arr(img, 1)
-        self.assertEqual(img.all(), Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1).all())
+        self.assertEqual(img.all(), Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1).all())
 
     # Test if BMI model loader function works
     def test_load_model_bmi(self):
         BMI_interpreter_fp16 = Assets.load_model_BMI()
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         input_index = BMI_interpreter_fp16.get_input_details()[0]["index"]
         output_index = BMI_interpreter_fp16.get_output_details()[0]["index"]
 
@@ -53,7 +53,7 @@ class TestAsset(TestCase):
     # Test if age and gender model loader function works
     def test_load_model_age_gender(self):
         AgeGender_interpreter_fp16 = Assets.load_model_AgeGender()
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         input_index = AgeGender_interpreter_fp16.get_input_details()[0]["index"]
         output_index1 = AgeGender_interpreter_fp16.get_output_details()[0]["index"]
         output_index2 = AgeGender_interpreter_fp16.get_output_details()[1]["index"]
@@ -71,7 +71,7 @@ class TestAsset(TestCase):
     def test_load_model_height_weight(self):
 
         HeightWeight_interpreter_fp16 = Assets.load_model_HeightWeight()
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         input_index = HeightWeight_interpreter_fp16.get_input_details()[0]["index"]
         output_index1 = HeightWeight_interpreter_fp16.get_output_details()[0]["index"]
         output_index2 = HeightWeight_interpreter_fp16.get_output_details()[1]["index"]
@@ -87,13 +87,13 @@ class TestAsset(TestCase):
 
     # Test if BMI predication function works
     def test_make_bmi_predictions(self):
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         results = Assets.make_BMI_predictions(arr)
         self.assertEqual(int(results[0]), 24)
 
     # Test if  age and gender predication function works
     def test_make_age_gender_predictions(self):
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         results = Assets.make_AgeGender_predictions(arr)
         if int(results[0]) == 13 and int(results[1]) == 0:
             self.assertTrue(True)
@@ -102,7 +102,7 @@ class TestAsset(TestCase):
 
     # Test if height and weight predication function works
     def test_make_height_weight_predictions(self):
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         results = Assets.make_HeightWeight_predictions(arr)
         if int(results[0]) == 69 and int(results[1]) == 167:
             self.assertTrue(True)
@@ -124,7 +124,7 @@ class TestAsset(TestCase):
 
     # Test if the BMR calculator works correctly
     def test_aghwto_bmr(self):
-        arr = Assets.img2arr('./CropedPhotoTemp/cropedForTest.jpg', 1)
+        arr = Assets.img2arr('./website/CropedPhotoTemp/cropedForTest.jpg', 1)
         ageGender = Assets.make_AgeGender_predictions(arr)
         heightWeight = Assets.make_HeightWeight_predictions(arr)
 
