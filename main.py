@@ -1,9 +1,7 @@
 import json
-
 from flask import Flask, request, jsonify
 from ml_model import Asset
-import gunicorn
-import seaborn
+
 
 app = Flask('app')
 Assets = Asset('./NotCropedPhoto/temp.jpg', './CropedPhotoTemp/croped.jpg', "./models/BMI_f16.tflite",
