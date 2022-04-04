@@ -1,6 +1,6 @@
 from unittest import TestCase
-from website.ml_model import Asset
-from website.ml_model import process_arr
+from ml_model import Asset
+from ml_model import process_arr
 import os
 from tensorflow.keras.preprocessing import image
 

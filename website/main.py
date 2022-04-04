@@ -1,21 +1,22 @@
 import json
 from flask import Flask, request,render_template, jsonify,Blueprint
-from .ml_model import Asset
+from ml_model import Asset
 import gunicorn
 import seaborn
 from werkzeug.utils import secure_filename
 
-ml=Blueprint('ml', __name__)
+app = Flask('app')
 Assets = Asset('./website/NotCropedPhoto/temp.jpg', './website/CropedPhotoTemp/croped.jpg', "./website/models/BMI_f16.tflite",
                "./website/models/AgeGender_fp16.tflite", "./website/models/height_weight_models.tflite")
 
 
-@ml.route('/', methods=['GET'])
-def homePage():
-    return "This is home page"
+@app.route('/')
+def home():
+    return render_template("home.html")
 
 
-@ml.route('/faceDetect', methods=['POST'])
+
+@app.route('/faceDetect', methods=['POST'])
 def faceDetect():
     # getting image data from post request
     file = request.files['image']
@@ -34,7 +35,7 @@ def faceDetect():
     return jsonify(result)
 
 
-@ml.route('/getbmi', methods=['POST'])  # get BMI from image
+@app.route('/getbmi', methods=['POST'])  # get BMI from image
 def getbmi():
     file = request.files['image']
     file.save("./website/NotCropedPhoto/temp.jpg")
@@ -49,7 +50,7 @@ def getbmi():
     return jsonify(result)
 
 
-@ml.route('/getagegender',
+@app.route('/getagegender',
            methods=['POST'])
 def getagegender():
     file = request.files['image']
@@ -65,7 +66,7 @@ def getagegender():
     return jsonify(result)
 
 
-@ml.route('/getheightweight',
+@app.route('/getheightweight',
            methods=['POST'])
 def getheightweight():
     file = request.files['image']
@@ -81,7 +82,7 @@ def getheightweight():
     return jsonify(result)
 
 
-@ml.route('/getheightweightagegender',
+@app.route('/getheightweightagegender',
            methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
 def getheightweightagegender():
     file = request.files['image']
@@ -98,7 +99,7 @@ def getheightweightagegender():
     return jsonify(result)
 
 
-@ml.route('/getbmr', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
+@app.route('/getbmr', methods=['POST'])  # you will get method not allowed in brower because browser sends GET request
 def getBMR():
     file = request.files['image']
     file.save("./website/NotCropedPhoto/temp.jpg")
@@ -115,12 +116,12 @@ def getBMR():
     return jsonify(result)
 
 
-@ml.route('/ping', methods=['GET'])
+@app.route('/ping', methods=['GET'])
 def ping():
     return "Pinging Model is really use full! Yay!!!!!!!!!"
 
 
-@ml.route('/addData', methods=['POST'])
+@app.route('/addData', methods=['POST'])
 def post_users():
     data = request.data.decode('utf-8')
     jsondata = json.loads(data)
@@ -138,7 +139,7 @@ def post_users():
     return "I hope it worked"
 
 
-@ml.route('/getData', methods=['POST'])
+@app.route('/getData', methods=['POST'])
 def getData():
     data = request.data.decode('utf-8')
     jsondata = json.loads(data)
@@ -160,7 +161,7 @@ def getData():
     return result
 
 
-@ml.route('/PostTest', methods=['POST'])
+@app.route('/PostTest', methods=['POST'])
 def PostTest():
     data = request.data.decode('utf-8')
     print(type(data))
@@ -171,7 +172,7 @@ def PostTest():
     return data
 
 
-@ml.route('/result', methods = ['GET', 'POST'])
+@app.route('/result', methods = ['GET', 'POST'])
 def result():
     if request.method == 'POST':
       f = request.files['file']
@@ -193,3 +194,6 @@ def result():
     # print(output["textInput"])
     # print(output["default-btn"])
     # return render_template("home.html")
+
+if __name__ == '__main__':
+    app.run()
