@@ -1,16 +1,15 @@
 import json
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from ml_model import Asset
-
 
 app = Flask('app')
 Assets = Asset('./NotCropedPhoto/temp.jpg', './CropedPhotoTemp/croped.jpg', "./models/BMI_f16.tflite",
                "./models/AgeGender_fp16.tflite", "./models/height_weight_models.tflite")
 
 
-@app.route('/', methods=['GET'])
-def homePage():
-    return "This is home page"
+@app.route('/')
+def home():
+    return render_template("home.html")
 
 
 @app.route('/faceDetect', methods=['POST'])
@@ -122,18 +121,12 @@ def ping():
 def post_users():
     data = request.data.decode('utf-8')
     jsondata = json.loads(data)
-    # file = request.file['username']
-    # _username = 'TharinduSilva'
-    # _BMI = 24.1
-    # _BMR = 1775
     _username = jsondata['username']
     _BMI = float(jsondata['BMI'])
     _BMR = int(jsondata['BMR'])
-
     sql = f"INSERT INTO userdata (username, BMI, BMR) VALUES ('{_username}', '{_BMI}','{_BMR}');"
-
     Assets.execute(sql, True)
-    return "I hope it worked"
+    return "worked"
 
 
 @app.route('/getData', methods=['POST'])
@@ -142,13 +135,12 @@ def getData():
     jsondata = json.loads(data)
 
     _username = jsondata['username']
-    # sql = f"SELECT BMI, BMR FROM userdata WHERE username='{_username}';"
     sql = f"SELECT BMI,BMR FROM userdata where username='{_username}';"
-    IHopeItWorked = Assets.execute(sql, False)
-    print(IHopeItWorked)
+    result = Assets.execute(sql, False)
+    print(result)
     BMI = []
     BMR = []
-    for i in IHopeItWorked:
+    for i in result:
         BMI.append(i[0])
         BMR.append(i[1])
 
@@ -158,15 +150,23 @@ def getData():
     return result
 
 
-@app.route('/PostTest', methods=['POST'])
-def PostTest():
-    data = request.data.decode('utf-8')
-    print(type(data))
-    jsondata = json.loads(data)
-    print(jsondata['username'])
-    print(jsondata['BMI'])
-    print(jsondata['BMR'])
-    return data
+
+
+@app.route('/result', methods=['GET', 'POST'])
+def result():
+    if request.method == 'POST':
+        f = request.files['file']
+        f.save('./NotCropedPhoto/temp.jpg')
+        Assets.crop_save_image()
+        arr = Assets.img2arr('./CropedPhotoTemp/croped.jpg', 1)
+
+        BMI = Assets.make_BMI_predictions(arr)
+        predictionsAG = Assets.make_AgeGender_predictions(arr)
+        predictionsHW = Assets.make_HeightWeight_predictions(arr)
+        BMR = Assets.AGHWToBMR(predictionsAG[0], predictionsAG[1], predictionsHW[0], predictionsHW[1])
+        print(BMI)
+        print(BMR)
+        return 'file uploaded successfully'
 
 
 if __name__ == '__main__':
