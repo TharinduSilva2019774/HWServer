@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+       <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='result.css') }}">
+      <title>BmHealth</title>
+   </head>
+ <body>
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <h3 class="text"> BMHealth</h3>
+
+          </div>
+        </div>
+    </div>
+    <div>
+        <h1>Calculator</h1>
+
+
+            <label>Your BMI:</label>
+            <input type="text" id="bmi" value="{{BMI}}">
+            <br>
+            <label>Your BMR:</label>
+            <input type="text" id="bmr" value="{{BMR}}">
+            <br>
+
+    </div>
+   </body>
+</html>

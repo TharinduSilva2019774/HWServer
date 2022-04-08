@@ -7,7 +7,7 @@ Assets = Asset('./NotCropedPhoto/temp.jpg', './CropedPhotoTemp/croped.jpg', "./m
                "./models/AgeGender_fp16.tflite", "./models/height_weight_models.tflite")
 
 
-@app.route('/')
+@app.route('/',methods=['GET'])
 def home():
     return render_template("home.html")
 
@@ -166,7 +166,7 @@ def result():
         BMR = Assets.AGHWToBMR(predictionsAG[0], predictionsAG[1], predictionsHW[0], predictionsHW[1])
         print(BMI)
         print(BMR)
-        return 'file uploaded successfully'
+        return render_template("result.html",BMI=round(BMI[0], 2),BMR=int(BMR))
 
 
 if __name__ == '__main__':

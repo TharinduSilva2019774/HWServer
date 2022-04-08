@@ -77,6 +77,8 @@ class Asset:
     def detect_face(self):
         img = cv2.cvtColor(cv2.imread(self.test_dir), cv2.COLOR_BGR2RGB)
         box = self.detector.detect_faces(img)[0]
+        faceCount = len(self.detector.detect_faces(img))
+        print("Face count is "+str(faceCount))
         return box
 
     def crop_save_image(self):
