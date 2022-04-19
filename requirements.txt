@@ -1,4 +1,6 @@
 SQLAlchemy==1.4.32
+Flask-Login==0.5.0
+Flask-SQLAlchemy==2.5.1
 Werkzeug==2.0.2
 json5==0.9.6
 jsonschema==4.2.1
