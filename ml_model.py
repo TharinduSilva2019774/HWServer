@@ -203,12 +203,10 @@ class Asset:
         result = ()
         try:
             if ifInsert:
-                print("wrong place")
                 with conn.cursor() as cursor:
                     cursor.execute(sql)
                 conn.commit()
             else:
-                print("correct place")
                 with conn.cursor() as cursor:
                     cursor.execute(sql)
                     result = cursor.fetchmany(size=50)
