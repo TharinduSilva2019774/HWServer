@@ -194,11 +194,11 @@ class Asset:
 
     def execute(self,sql,ifInsert):
         # REMOTE DATABASE
-        conn = pymysql.connect(host='database-1.cksrynn1pjqu.us-east-1.rds.amazonaws.com',
+        conn = pymysql.connect(host='bm-health.cdur0uewqfbk.ap-south-1.rds.amazonaws.com',
                                port=3306,
-                               user='admin',
-                               password='bmhealthdatabase',
-                               db='TeamFuego',
+                               user='root',
+                               password='bmhealth',
+                               db='bm-health',
                                )
         result = ()
         try:
