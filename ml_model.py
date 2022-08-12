@@ -198,7 +198,7 @@ class Asset:
                                port=3306,
                                user='root',
                                password='bmhealth',
-                               db='bm-health',
+                               db='BMHealth',
                                )
         result = ()
         try:
